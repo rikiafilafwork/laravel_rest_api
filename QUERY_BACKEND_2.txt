@@ -1,0 +1,20 @@
+1. SELECT * FROM employees;
+2. SELECT * FROM employees WHERE job_title="Manager";
+3. SELECT name,salary FROM employees WHERE department="Sales" OR department="Marketing";
+4. SELECT AVG(salary) AS salary_average FROM employees WHERE YEAR(joined_date) BETWEEN (YEAR(CURDATE())-5) AND YEAR(CURDATE());
+5. SELECT employees.*, SUM(sales_data.sales) AS total_sales FROM employees JOIN sales_data ON employees.employee_id = sales_data.employee_id GROUP BY employees.employee_id ORDER BY SUM(sales_data.sales) DESC LIMIT 5;
+6. SELECT name,salary,department,(SELECT AVG(emps.salary) FROM employees AS emps WHERE department=emp.department GROUP BY department) AS salary_average FROM employees emp HAVING emp.salary > salary_average;
+7. SELECT employees.name, SUM(sales_data.sales) AS total_sales, ROW_NUMBER() OVER (ORDER BY SUM(sales_data.sales) DESC) AS ranking FROM employees JOIN sales_data ON employees.employee_id = sales_data.employee_id GROUP BY employees.employee_id ORDER BY SUM(sales_data.sales) DESC;
+8.
+DELIMITER //
+
+CREATE PROCEDURE GetEmployeesByDepartment(
+	IN departmentName VARCHAR(255)
+)
+BEGIN
+	SELECT *
+ 	FROM employees
+	WHERE department = departmentName COLLATE utf8mb4_unicode_ci;
+END //
+
+DELIMITER ;
