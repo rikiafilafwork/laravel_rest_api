@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController;
 use App\Http\Requests\TodoRequest;
 use App\Models\Todo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TodoController extends Controller
+class TodoController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +16,7 @@ class TodoController extends Controller
     {
         $data = Todo::get();
 
-        return response()->json($data, 200);
+        return $this->sendResponse($data, 'todo list retrieved successfully');
     }
 
     /**
@@ -26,7 +27,7 @@ class TodoController extends Controller
         $input = $request->all();
         $data = Todo::create($input);
 
-        return response()->json($data, 200);
+        return $this->sendResponse($data, 'todo list created successfully');
     }
 
     /**
@@ -34,9 +35,13 @@ class TodoController extends Controller
      */
     public function show(string $id)
     {
-        $data = Todo::find($id);
+        try {
+            $data = Todo::findOrFail($id);
 
-        return response()->json($data, 200);
+            return $this->sendResponse($data, 'todo list retrieved successfully');
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('Todo not found', $e->getMessage(), 404);
+        }
     }
 
     /**
@@ -44,12 +49,16 @@ class TodoController extends Controller
      */
     public function update(TodoRequest $request, string $id)
     {
-        $data = Todo::find($id);
+        try {
+            $data = Todo::findOrFail($id);
 
-        $input = $request->all();
-        $data = $data->update($input);
+            $input = $request->all();
+            $data->update($input);
 
-        return response()->json($data, 200);
+            return $this->sendResponse($data, 'todo list updated successfully');
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('Todo update failed', $e->getMessage(), 404);
+        }
     }
 
     /**
@@ -57,9 +66,14 @@ class TodoController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Todo::find($id);
-        $data = $data->delete();
+        try {
+            $data = Todo::findOrFail($id);
+            $data = Todo::find($id);
+            $data->delete();
 
-        return response()->json($data, 200);
+            return $this->sendResponse($data, 'todo list deleted successfully');
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('Todo delete failed', $e->getMessage(), 404);
+        }
     }
 }
