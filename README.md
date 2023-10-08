@@ -23,6 +23,10 @@ php artisan key:generate
 ```
 php artisan migrate --seed
 ```
+# Run Test Unit
+```
+php artisan test
+```
 # Postman Collection
 Contoh Endpoint dapat dilihat menggunakan postman [Laravel Rest API Sample](https://github.com/rikiafilafwork/laravel_rest_api/blob/main/Laravel%20Rest%20API%20Sample.postman_collection.json)
 # Backend Query Test
